@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" role="img" aria-label="Tissus wax, panier tressé et beurre de karité">
+<defs><pattern id="h-a" width="80" height="80" patternUnits="userSpaceOnUse">
+<rect width="80" height="80" fill="#b5532b"/>
+<circle cx="40.0" cy="40.0" r="30.4" fill="#1c2347"/><circle cx="40.0" cy="40.0" r="22.400000000000002" fill="#d4a23a"/>
+<circle cx="40.0" cy="40.0" r="13.600000000000001" fill="#f7f1e6"/><circle cx="40.0" cy="40.0" r="5.6000000000000005" fill="#1c2347"/>
+<circle cx="0" cy="0" r="7.199999999999999" fill="#f7f1e6"/><circle cx="80" cy="0" r="7.199999999999999" fill="#f7f1e6"/>
+<circle cx="0" cy="80" r="7.199999999999999" fill="#f7f1e6"/><circle cx="80" cy="80" r="7.199999999999999" fill="#f7f1e6"/></pattern><pattern id="h-b" width="90" height="90" patternUnits="userSpaceOnUse">
+<rect width="90" height="90" fill="#1c2347"/>
+<ellipse cx="27.0" cy="27.0" rx="21.599999999999998" ry="9.0" fill="#d4a23a" transform="rotate(-35 27.0 27.0)"/>
+<ellipse cx="27.0" cy="27.0" rx="10.799999999999999" ry="3.6" fill="#b5532b" transform="rotate(-35 27.0 27.0)"/>
+<ellipse cx="67.5" cy="67.5" rx="21.599999999999998" ry="9.0" fill="#f7f1e6" transform="rotate(35 67.5 67.5)"/>
+<circle cx="70.2" cy="19.8" r="5.3999999999999995" fill="#b5532b"/><circle cx="19.8" cy="72.0" r="4.5" fill="#d4a23a"/></pattern><pattern id="h-c" width="72" height="72" patternUnits="userSpaceOnUse"><rect x="0" y="0.0" width="72" height="18.0" fill="#d4a23a"/><rect x="0" y="18.0" width="72" height="18.0" fill="#2f6b4f"/><rect x="0" y="36.0" width="72" height="18.0" fill="#b5532b"/><rect x="0" y="54.0" width="72" height="18.0" fill="#231f1c"/><rect x="36.0" y="0.0" width="36.0" height="18.0" fill="#b5532b"/><rect x="36.0" y="18.0" width="36.0" height="18.0" fill="#231f1c"/><rect x="36.0" y="36.0" width="36.0" height="18.0" fill="#d4a23a"/><rect x="36.0" y="54.0" width="36.0" height="18.0" fill="#2f6b4f"/><rect x="42.0" y="0" width="2" height="72" fill="#f7f1e6" opacity=".55"/><rect x="48.0" y="0" width="2" height="72" fill="#f7f1e6" opacity=".55"/><rect x="54.0" y="0" width="2" height="72" fill="#f7f1e6" opacity=".55"/><rect x="60.0" y="0" width="2" height="72" fill="#f7f1e6" opacity=".55"/></pattern><pattern id="h-weave" width="24" height="24" patternUnits="userSpaceOnUse">
+<rect width="24" height="24" fill="#c89a5b"/><rect width="12.0" height="12.0" fill="#a8763d"/><rect x="12.0" y="12.0" width="12.0" height="12.0" fill="#a8763d"/>
+<path d="M0 12.0 H24 M12.0 0 V24" stroke="#7a5124" stroke-width="1" opacity=".5"/></pattern><linearGradient id="h-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".2"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient>
+<linearGradient id="h-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient></defs>
+<rect width="640" height="560" fill="url(#h-b)"/>
+<path d="M0 0 H640 V560 H0Z" fill="#1c2347" opacity=".25"/>
+<path d="M60 40 Q320 10 580 40 L600 520 Q320 560 40 520 Z" fill="url(#h-a)"/>
+<path d="M60 40 Q320 10 580 40 L600 520 Q320 560 40 520 Z" fill="url(#h-shade)"/>
+<path d="M40 380 Q320 330 600 380 L600 520 Q320 560 40 520 Z" fill="url(#h-c)"/>
+<path d="M40 380 Q320 330 600 380" stroke="#f7f1e6" stroke-width="6" fill="none"/>
+<g transform="translate(250 200) scale(.95)">
+<ellipse cx="200" cy="270" rx="150" ry="18" fill="#000" opacity=".25"/>
+<path d="M90 140 Q200 120 310 140 Q300 250 200 262 Q100 250 90 140Z" fill="url(#h-weave)" stroke="#6b4420" stroke-width="3"/>
+<path d="M90 140 Q200 120 310 140 Q300 250 200 262 Q100 250 90 140Z" fill="url(#h-shade)"/>
+<ellipse cx="200" cy="138" rx="110" ry="20" fill="#7a5124" stroke="#6b4420" stroke-width="3"/>
+<path d="M92 160 Q200 182 308 160" stroke="#b5532b" stroke-width="7" fill="none"/><path d="M98 190 Q200 212 302 190" stroke="#1c2347" stroke-width="7" fill="none"/></g>
+<g transform="translate(20 230) scale(.85)">
+<ellipse cx="200" cy="268" rx="90" ry="12" fill="#000" opacity=".25"/>
+<rect x="140" y="120" width="120" height="140" rx="18" fill="#efe3c8" stroke="#231f1c" stroke-width="2"/>
+<rect x="132" y="92" width="136" height="40" rx="8" fill="url(#h-wood)" stroke="#231f1c" stroke-width="2"/>
+<rect x="152" y="165" width="96" height="58" fill="#f7f1e6" stroke="#b5532b" stroke-width="2"/>
+<text x="200" y="200" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#b5532b" font-weight="700">KARITÉ</text></g>
+</svg>

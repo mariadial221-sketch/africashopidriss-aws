@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="coussin-bogolan-m" width="60" height="60" patternUnits="userSpaceOnUse">
+<rect width="60" height="60" fill="#3a2a20"/>
+<path d="M0 10 L10 2 L20 10 L30 2 L40 10 L50 2 L60 10" stroke="#f7f1e6" stroke-width="3" fill="none"/>
+<circle cx="10" cy="30" r="3" fill="#f7f1e6"/><circle cx="30" cy="30" r="3" fill="#f7f1e6"/><circle cx="50" cy="30" r="3" fill="#f7f1e6"/>
+<path d="M22 44 h16 M30 36 v16" stroke="#f7f1e6" stroke-width="3"/>
+<rect x="4" y="46" width="8" height="8" fill="none" stroke="#f7f1e6" stroke-width="2"/><rect x="48" y="46" width="8" height="8" fill="none" stroke="#f7f1e6" stroke-width="2"/></pattern>
+<radialGradient id="coussin-bogolan-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="coussin-bogolan-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="coussin-bogolan-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#coussin-bogolan-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M110 80 Q200 60 290 80 Q312 165 290 250 Q200 270 110 250 Q88 165 110 80Z" fill="url(#coussin-bogolan-m)" stroke="#f7f1e6" stroke-width="6"/>
+<path d="M110 80 Q200 60 290 80 Q312 165 290 250 Q200 270 110 250 Q88 165 110 80Z" fill="url(#coussin-bogolan-shade)"/>
+<circle cx="200" cy="165" r="10" fill="#f7f1e6" stroke="#231f1c" stroke-width="2"/></svg>

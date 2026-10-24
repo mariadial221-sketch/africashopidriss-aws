@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs>
+<radialGradient id="epicerie-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="epicerie-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="epicerie-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#epicerie-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<g transform="translate(-10 70) scale(.72)"><path d="M140 80 L260 80 L272 262 L128 262 Z" fill="#c9a170" stroke="#231f1c" stroke-width="2"/>
+<path d="M140 80 L260 80 L272 262 L128 262 Z" fill="url(#epicerie-shade)"/>
+<path d="M140 80 L150 64 L250 64 L260 80" fill="#b88c5a" stroke="#231f1c" stroke-width="2"/>
+<rect x="152" y="140" width="96" height="70" fill="#f7f1e6" stroke="#1c2347" stroke-width="2"/>
+<text x="200" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="700" fill="#1c2347">ÉPICES &amp; CAFÉ</text>
+<text x="200" y="192" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#b5532b">Dakar · 500 g</text><ellipse cx="95" cy="255" rx="9" ry="6" fill="#4a2a14" transform="rotate(20 95 255)"/><ellipse cx="115" cy="262" rx="9" ry="6" fill="#4a2a14" transform="rotate(-30 115 262)"/><ellipse cx="300" cy="258" rx="9" ry="6" fill="#4a2a14" transform="rotate(40 300 258)"/><ellipse cx="318" cy="250" rx="9" ry="6" fill="#4a2a14" transform="rotate(-10 318 250)"/><ellipse cx="285" cy="266" rx="9" ry="6" fill="#4a2a14" transform="rotate(0 285 266)"/></g><g transform="translate(122 70) scale(.72)"><path d="M150 160 q12 -18 24 0 q-12 14 -24 0z" fill="#8d1b2c" transform="rotate(10 162 160)"/><path d="M175 150 q12 -18 24 0 q-12 14 -24 0z" fill="#a3243a" transform="rotate(-20 187 150)"/><path d="M200 158 q12 -18 24 0 q-12 14 -24 0z" fill="#7a1626" transform="rotate(30 212 158)"/><path d="M225 148 q12 -18 24 0 q-12 14 -24 0z" fill="#9b2035" transform="rotate(-10 237 148)"/><path d="M165 175 q12 -18 24 0 q-12 14 -24 0z" fill="#a3243a" transform="rotate(40 177 175)"/><path d="M205 172 q12 -18 24 0 q-12 14 -24 0z" fill="#8d1b2c" transform="rotate(-35 217 172)"/><path d="M230 168 q12 -18 24 0 q-12 14 -24 0z" fill="#7a1626" transform="rotate(15 242 168)"/><path d="M185 140 q12 -18 24 0 q-12 14 -24 0z" fill="#b02a42" transform="rotate(0 197 140)"/><path d="M110 170 Q200 180 290 170 Q280 250 200 258 Q120 250 110 170Z" fill="url(#epicerie-wood)" stroke="#231f1c" stroke-width="2"/>
+<path d="M120 200 Q200 214 280 200" stroke="#d4a23a" stroke-width="3" fill="none" opacity=".7"/></g></svg>

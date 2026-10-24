@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="assets/img/products/panier-thies.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css"><script src="assets/js/config.js"></script>
+<title>Espace vendeur — AfricaShop</title></head>
+<body><main class="wrap">
+<div class="page-title"><h1>Espace vendeur</h1><p style="color:var(--muted);max-width:60ch">Ouvrez votre boutique et publiez vos créations avec leur photo. Démonstration : espace ouvert à tous ; en architecture cible, il est protégé par Amazon Cognito.</p></div>
+<div id="msg"></div>
+<div class="two">
+<form class="panel" id="product-form"><h2 style="font-size:1.8rem">Publier un produit</h2>
+<div class="field"><label for="vendor_id">Boutique</label><select id="vendor_id" name="vendor_id" required></select></div>
+<div class="field"><label for="pname">Nom du produit</label><input id="pname" name="pname" required minlength="2" placeholder="Ex. Panier tressé en rônier"></div>
+<div class="field"><label for="description">Description</label><textarea id="description" name="description" rows="3" placeholder="Matières, dimensions, technique…"></textarea></div>
+<div class="field"><label for="category">Univers</label><select id="category" name="category"></select></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+<div class="field"><label for="price">Prix (FCFA)</label><input id="price" name="price" type="number" min="1" required></div>
+<div class="field"><label for="stock">Stock</label><input id="stock" name="stock" type="number" min="0" value="10" required></div></div>
+<div class="field"><label for="photo">Photo (JPEG, PNG ou WebP, 5 Mo maximum)</label><input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp"><div id="preview"></div></div>
+<button class="btn">Publier</button></form>
+<form class="panel" id="vendor-form" style="background:var(--cream)"><h2 style="font-size:1.8rem">Ouvrir une boutique</h2>
+<div class="field"><label for="name">Nom de l'atelier</label><input id="name" name="name" required minlength="2"></div>
+<div class="field"><label for="vcountry">Pays</label><select id="vcountry" name="country"></select></div>
+<div class="field"><label for="city">Ville</label><input id="city" name="city"></div>
+<button class="btn ghost">Créer la boutique</button></form>
+</div></main><script type="module" src="assets/js/vendeur.js"></script></body></html>

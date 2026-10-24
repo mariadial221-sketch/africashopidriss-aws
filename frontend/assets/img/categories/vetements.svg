@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="vetements-a" width="56" height="56" patternUnits="userSpaceOnUse">
+<rect width="56" height="56" fill="#b5532b"/>
+<circle cx="28.0" cy="28.0" r="21.28" fill="#1c2347"/><circle cx="28.0" cy="28.0" r="15.680000000000001" fill="#d4a23a"/>
+<circle cx="28.0" cy="28.0" r="9.520000000000001" fill="#f7f1e6"/><circle cx="28.0" cy="28.0" r="3.9200000000000004" fill="#1c2347"/>
+<circle cx="0" cy="0" r="5.04" fill="#f7f1e6"/><circle cx="56" cy="0" r="5.04" fill="#f7f1e6"/>
+<circle cx="0" cy="56" r="5.04" fill="#f7f1e6"/><circle cx="56" cy="56" r="5.04" fill="#f7f1e6"/></pattern><pattern id="vetements-b" width="60" height="60" patternUnits="userSpaceOnUse">
+<rect width="60" height="60" fill="#1c2347"/>
+<ellipse cx="18.0" cy="18.0" rx="14.399999999999999" ry="6.0" fill="#d4a23a" transform="rotate(-35 18.0 18.0)"/>
+<ellipse cx="18.0" cy="18.0" rx="7.199999999999999" ry="2.4" fill="#b5532b" transform="rotate(-35 18.0 18.0)"/>
+<ellipse cx="45.0" cy="45.0" rx="14.399999999999999" ry="6.0" fill="#f7f1e6" transform="rotate(35 45.0 45.0)"/>
+<circle cx="46.800000000000004" cy="13.2" r="3.5999999999999996" fill="#b5532b"/><circle cx="13.2" cy="48.0" r="3.0" fill="#d4a23a"/></pattern><pattern id="vetements-c" width="64" height="64" patternUnits="userSpaceOnUse"><rect x="0" y="0.0" width="64" height="16.0" fill="#d4a23a"/><rect x="0" y="16.0" width="64" height="16.0" fill="#2f6b4f"/><rect x="0" y="32.0" width="64" height="16.0" fill="#b5532b"/><rect x="0" y="48.0" width="64" height="16.0" fill="#231f1c"/><rect x="32.0" y="0.0" width="32.0" height="16.0" fill="#b5532b"/><rect x="32.0" y="16.0" width="32.0" height="16.0" fill="#231f1c"/><rect x="32.0" y="32.0" width="32.0" height="16.0" fill="#d4a23a"/><rect x="32.0" y="48.0" width="32.0" height="16.0" fill="#2f6b4f"/><rect x="38.0" y="0" width="2" height="64" fill="#f7f1e6" opacity=".55"/><rect x="44.0" y="0" width="2" height="64" fill="#f7f1e6" opacity=".55"/><rect x="50.0" y="0" width="2" height="64" fill="#f7f1e6" opacity=".55"/><rect x="56.0" y="0" width="2" height="64" fill="#f7f1e6" opacity=".55"/></pattern><pattern id="vetements-d" width="48" height="48" patternUnits="userSpaceOnUse">
+<rect width="48" height="48" fill="#2f6b4f"/>
+<path d="M24.0 2 L46 24.0 L24.0 46 L2 24.0Z" fill="#d4a23a"/><path d="M24.0 10.56 L37.44 24.0 L24.0 37.44 L10.56 24.0Z" fill="#b5532b"/>
+<circle cx="24.0" cy="24.0" r="4.800000000000001" fill="#f7f1e6"/></pattern>
+<radialGradient id="vetements-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="vetements-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="vetements-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#vetements-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<rect x="100" y="210" width="200" height="40" rx="5" fill="url(#vetements-a)" stroke="#231f1c" stroke-width="2"/><rect x="100" y="210" width="200" height="40" rx="5" fill="url(#vetements-shade)"/><rect x="106" y="172" width="188" height="40" rx="5" fill="url(#vetements-c)" stroke="#231f1c" stroke-width="2"/><rect x="106" y="172" width="188" height="40" rx="5" fill="url(#vetements-shade)"/><rect x="112" y="134" width="176" height="40" rx="5" fill="url(#vetements-b)" stroke="#231f1c" stroke-width="2"/><rect x="112" y="134" width="176" height="40" rx="5" fill="url(#vetements-shade)"/><rect x="118" y="96" width="164" height="40" rx="5" fill="url(#vetements-d)" stroke="#231f1c" stroke-width="2"/><rect x="118" y="96" width="164" height="40" rx="5" fill="url(#vetements-shade)"/></svg>

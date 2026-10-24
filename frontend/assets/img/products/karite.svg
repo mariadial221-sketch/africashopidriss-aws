@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs>
+<radialGradient id="karite-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="karite-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="karite-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#karite-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<rect x="140" y="120" width="120" height="140" rx="18" fill="#efe3c8" stroke="#231f1c" stroke-width="2"/>
+<rect x="140" y="120" width="120" height="140" rx="18" fill="url(#karite-shade)"/>
+<rect x="132" y="92" width="136" height="40" rx="8" fill="url(#karite-wood)" stroke="#231f1c" stroke-width="2"/>
+<rect x="152" y="165" width="96" height="58" fill="#f7f1e6" stroke="#b5532b" stroke-width="2"/>
+<text x="200" y="200" text-anchor="middle" font-family="Georgia,serif" font-size="17" fill="#b5532b" font-weight="700">KARITÉ</text>
+<path d="M160 116 Q200 70 240 116" fill="#f7efdc" opacity=".9"/></svg>

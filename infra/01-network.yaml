@@ -1,0 +1,331 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  AfricaShop - Bloc 1 : reseau. VPC sur 2 zones de disponibilite avec 3 niveaux de
+  sous-reseaux (public / application / donnees), NAT Gateway, endpoint S3 et
+  groupes de securite chaines (ALB -> instances -> base de donnees).
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: africashop
+    Description: Prefixe utilise pour les noms et les exports.
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+  TwoNatGateways:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: >
+      false = 1 seule NAT Gateway (economise le credit du lab, mais point de defaillance unique
+      pour la sortie Internet des instances). true = 1 NAT par zone (cible de production).
+  AppPort:
+    Type: Number
+    Default: 8000
+    Description: Port d'ecoute de l'API sur les instances.
+  CloudFrontPrefixListId:
+    Type: String
+    Default: ""
+    Description: >
+      Identifiant de la prefix list CloudFront (pl-xxxx). Si renseigne, l'ALB n'accepte que le
+      trafic venant de CloudFront. Si vide, l'ALB accepte tout Internet sur le port 80.
+
+Conditions:
+  HasTwoNats: !Equals [!Ref TwoNatGateways, "true"]
+  HasPrefixList: !Not [!Equals [!Ref CloudFrontPrefixListId, ""]]
+  NoPrefixList: !Equals [!Ref CloudFrontPrefixListId, ""]
+
+Resources:
+  # ---------------------------------------------------------------- VPC
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-vpc" }
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-igw" }
+
+  IgwAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  # ---------------------------------------------------------------- Sous-reseaux publics (ALB, NAT)
+  PublicSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-public-a" }
+  PublicSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.1.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-public-b" }
+
+  # ---------------------------------------------------------------- Sous-reseaux application (instances EC2, sans IP publique)
+  AppSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.10.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-app-a" }
+  AppSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.11.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-app-b" }
+
+  # ---------------------------------------------------------------- Sous-reseaux donnees (RDS, aucune route vers Internet)
+  DataSubnetA:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [0, !GetAZs ""]
+      CidrBlock: 10.0.20.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-data-a" }
+  DataSubnetB:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      AvailabilityZone: !Select [1, !GetAZs ""]
+      CidrBlock: 10.0.21.0/24
+      MapPublicIpOnLaunch: false
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-data-b" }
+
+  # ---------------------------------------------------------------- Routage public
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-rt-public" }
+  PublicDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: IgwAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+  PublicSubnetARouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetA
+      RouteTableId: !Ref PublicRouteTable
+  PublicSubnetBRouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnetB
+      RouteTableId: !Ref PublicRouteTable
+
+  # ---------------------------------------------------------------- NAT Gateways (sortie Internet des instances privees)
+  NatEipA:
+    Type: AWS::EC2::EIP
+    DependsOn: IgwAttachment
+    Properties:
+      Domain: vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-nat-eip-a" }
+  NatGatewayA:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatEipA.AllocationId
+      SubnetId: !Ref PublicSubnetA
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-nat-a" }
+
+  NatEipB:
+    Type: AWS::EC2::EIP
+    Condition: HasTwoNats
+    DependsOn: IgwAttachment
+    Properties:
+      Domain: vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-nat-eip-b" }
+  NatGatewayB:
+    Type: AWS::EC2::NatGateway
+    Condition: HasTwoNats
+    Properties:
+      AllocationId: !GetAtt NatEipB.AllocationId
+      SubnetId: !Ref PublicSubnetB
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-nat-b" }
+
+  # ---------------------------------------------------------------- Routage application (une table par zone)
+  AppRouteTableA:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-rt-app-a" }
+  AppRouteTableB:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-rt-app-b" }
+  AppDefaultRouteA:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTableA
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGatewayA
+  AppDefaultRouteB:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref AppRouteTableB
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !If [HasTwoNats, !Ref NatGatewayB, !Ref NatGatewayA]
+  AppSubnetARouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref AppSubnetA
+      RouteTableId: !Ref AppRouteTableA
+  AppSubnetBRouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref AppSubnetB
+      RouteTableId: !Ref AppRouteTableB
+
+  # Endpoint S3 (gratuit) : le trafic vers S3 ne passe pas par la NAT
+  S3GatewayEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref Vpc
+      ServiceName: !Sub "com.amazonaws.${AWS::Region}.s3"
+      VpcEndpointType: Gateway
+      RouteTableIds:
+        - !Ref AppRouteTableA
+        - !Ref AppRouteTableB
+
+  # ---------------------------------------------------------------- Routage donnees (aucune route Internet)
+  DataRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-rt-data" }
+  DataSubnetARouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DataSubnetA
+      RouteTableId: !Ref DataRouteTable
+  DataSubnetBRouteAssoc:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref DataSubnetB
+      RouteTableId: !Ref DataRouteTable
+
+  # ---------------------------------------------------------------- Groupes de securite chaines
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB - recoit le trafic web
+      VpcId: !Ref Vpc
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-sg-alb" }
+  AlbIngressFromCloudFront:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: HasPrefixList
+    Properties:
+      GroupId: !Ref AlbSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      SourcePrefixListId: !Ref CloudFrontPrefixListId
+      Description: HTTP depuis CloudFront uniquement
+  AlbIngressFromInternet:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: NoPrefixList
+    Properties:
+      GroupId: !Ref AlbSecurityGroup
+      IpProtocol: tcp
+      FromPort: 80
+      ToPort: 80
+      CidrIp: 0.0.0.0/0
+      Description: HTTP depuis Internet (a restreindre a CloudFront)
+
+  AppSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Instances applicatives - trafic de l ALB uniquement
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref AppPort
+          ToPort: !Ref AppPort
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+          Description: API depuis l ALB
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-sg-app" }
+
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Base de donnees - recoit uniquement le trafic des instances
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref AppSecurityGroup
+          Description: PostgreSQL depuis les instances
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-sg-db" }
+
+Outputs:
+  VpcId:
+    Value: !Ref Vpc
+    Export: { Name: !Sub "${ProjectName}-VpcId" }
+  PublicSubnetA:
+    Value: !Ref PublicSubnetA
+    Export: { Name: !Sub "${ProjectName}-PublicSubnetA" }
+  PublicSubnetB:
+    Value: !Ref PublicSubnetB
+    Export: { Name: !Sub "${ProjectName}-PublicSubnetB" }
+  AppSubnetA:
+    Value: !Ref AppSubnetA
+    Export: { Name: !Sub "${ProjectName}-AppSubnetA" }
+  AppSubnetB:
+    Value: !Ref AppSubnetB
+    Export: { Name: !Sub "${ProjectName}-AppSubnetB" }
+  DataSubnetA:
+    Value: !Ref DataSubnetA
+    Export: { Name: !Sub "${ProjectName}-DataSubnetA" }
+  DataSubnetB:
+    Value: !Ref DataSubnetB
+    Export: { Name: !Sub "${ProjectName}-DataSubnetB" }
+  AlbSecurityGroupId:
+    Value: !Ref AlbSecurityGroup
+    Export: { Name: !Sub "${ProjectName}-AlbSgId" }
+  AppSecurityGroupId:
+    Value: !Ref AppSecurityGroup
+    Export: { Name: !Sub "${ProjectName}-AppSgId" }
+  DbSecurityGroupId:
+    Value: !Ref DbSecurityGroup
+    Export: { Name: !Sub "${ProjectName}-DbSgId" }

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="panier-thies-weave" width="24" height="24" patternUnits="userSpaceOnUse">
+<rect width="24" height="24" fill="#c89a5b"/><rect width="12.0" height="12.0" fill="#a8763d"/><rect x="12.0" y="12.0" width="12.0" height="12.0" fill="#a8763d"/>
+<path d="M0 12.0 H24 M12.0 0 V24" stroke="#7a5124" stroke-width="1" opacity=".5"/></pattern>
+<radialGradient id="panier-thies-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="panier-thies-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="panier-thies-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#panier-thies-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M90 140 Q200 120 310 140 Q300 250 200 262 Q100 250 90 140Z" fill="url(#panier-thies-weave)" stroke="#6b4420" stroke-width="3"/>
+<path d="M90 140 Q200 120 310 140 Q300 250 200 262 Q100 250 90 140Z" fill="url(#panier-thies-shade)"/>
+<ellipse cx="200" cy="138" rx="110" ry="20" fill="#7a5124" stroke="#6b4420" stroke-width="3"/>
+<path d="M92 160 Q200 182 308 160" stroke="#b5532b" stroke-width="7" fill="none"/>
+<path d="M98 190 Q200 212 302 190" stroke="#1c2347" stroke-width="7" fill="none"/></svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="cabas-pagne-m" width="60" height="60" patternUnits="userSpaceOnUse">
+<rect width="60" height="60" fill="#1c2347"/>
+<ellipse cx="18.0" cy="18.0" rx="14.399999999999999" ry="6.0" fill="#d4a23a" transform="rotate(-35 18.0 18.0)"/>
+<ellipse cx="18.0" cy="18.0" rx="7.199999999999999" ry="2.4" fill="#b5532b" transform="rotate(-35 18.0 18.0)"/>
+<ellipse cx="45.0" cy="45.0" rx="14.399999999999999" ry="6.0" fill="#f7f1e6" transform="rotate(35 45.0 45.0)"/>
+<circle cx="46.800000000000004" cy="13.2" r="3.5999999999999996" fill="#b5532b"/><circle cx="13.2" cy="48.0" r="3.0" fill="#d4a23a"/></pattern>
+<radialGradient id="cabas-pagne-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="cabas-pagne-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="cabas-pagne-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#cabas-pagne-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M160 120 Q160 60 200 60 Q240 60 240 120" stroke="#6b3f22" stroke-width="9" fill="none"/>
+<path d="M120 115 L280 115 L262 262 L138 262 Z" fill="url(#cabas-pagne-m)" stroke="#231f1c" stroke-width="2"/>
+<path d="M120 115 L280 115 L262 262 L138 262 Z" fill="url(#cabas-pagne-shade)"/>
+<rect x="120" y="115" width="160" height="14" fill="#231f1c" opacity=".85"/></svg>

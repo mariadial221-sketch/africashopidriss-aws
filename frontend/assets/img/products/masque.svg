@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs>
+<radialGradient id="masque-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#eadfca"/></radialGradient>
+<linearGradient id="masque-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="masque-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#masque-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M200 40 Q262 60 262 150 Q258 238 200 268 Q142 238 138 150 Q138 60 200 40Z" fill="url(#masque-wood)" stroke="#231f1c" stroke-width="2"/>
+<path d="M160 120 Q178 108 192 122 Q178 132 160 120Z M208 122 Q222 108 240 120 Q222 132 208 122Z" fill="#231f1c"/>
+<path d="M200 128 L192 190 L208 190 Z" fill="#4a2810"/>
+<path d="M180 214 Q200 226 220 214" stroke="#231f1c" stroke-width="4" fill="none"/>
+<path d="M170 70 Q200 58 230 70 M175 86 Q200 76 225 86" stroke="#d4a23a" stroke-width="3" fill="none"/>
+<circle cx="150" cy="170" r="4" fill="#f7f1e6"/><circle cx="250" cy="170" r="4" fill="#f7f1e6"/></svg>

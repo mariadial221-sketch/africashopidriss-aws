@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs>
+<radialGradient id="cafe-touba-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="cafe-touba-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="cafe-touba-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#cafe-touba-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M140 80 L260 80 L272 262 L128 262 Z" fill="#c9a170" stroke="#231f1c" stroke-width="2"/>
+<path d="M140 80 L260 80 L272 262 L128 262 Z" fill="url(#cafe-touba-shade)"/>
+<path d="M140 80 L150 64 L250 64 L260 80" fill="#b88c5a" stroke="#231f1c" stroke-width="2"/>
+<rect x="152" y="140" width="96" height="70" fill="#f7f1e6" stroke="#1c2347" stroke-width="2"/>
+<text x="200" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="12" font-weight="700" fill="#1c2347">CAFÉ TOUBA</text>
+<text x="200" y="192" text-anchor="middle" font-family="Georgia,serif" font-size="10" fill="#b5532b">Dakar · 500 g</text><ellipse cx="95" cy="255" rx="9" ry="6" fill="#4a2a14" transform="rotate(20 95 255)"/><ellipse cx="115" cy="262" rx="9" ry="6" fill="#4a2a14" transform="rotate(-30 115 262)"/><ellipse cx="300" cy="258" rx="9" ry="6" fill="#4a2a14" transform="rotate(40 300 258)"/><ellipse cx="318" cy="250" rx="9" ry="6" fill="#4a2a14" transform="rotate(-10 318 250)"/><ellipse cx="285" cy="266" rx="9" ry="6" fill="#4a2a14" transform="rotate(0 285 266)"/></svg>

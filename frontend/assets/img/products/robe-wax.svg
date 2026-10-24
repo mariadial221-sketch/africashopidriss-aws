@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="robe-wax-m" width="56" height="56" patternUnits="userSpaceOnUse">
+<rect width="56" height="56" fill="#b5532b"/>
+<circle cx="28.0" cy="28.0" r="21.28" fill="#1c2347"/><circle cx="28.0" cy="28.0" r="15.680000000000001" fill="#d4a23a"/>
+<circle cx="28.0" cy="28.0" r="9.520000000000001" fill="#f7f1e6"/><circle cx="28.0" cy="28.0" r="3.9200000000000004" fill="#1c2347"/>
+<circle cx="0" cy="0" r="5.04" fill="#f7f1e6"/><circle cx="56" cy="0" r="5.04" fill="#f7f1e6"/>
+<circle cx="0" cy="56" r="5.04" fill="#f7f1e6"/><circle cx="56" cy="56" r="5.04" fill="#f7f1e6"/></pattern>
+<radialGradient id="robe-wax-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="robe-wax-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="robe-wax-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#robe-wax-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M170 55 Q200 72 230 55 L246 70 L236 110 Q250 200 285 255 Q200 272 115 255 Q150 200 164 110 L154 70 Z" fill="url(#robe-wax-m)" stroke="#231f1c" stroke-width="2"/>
+<path d="M170 55 Q200 72 230 55 L246 70 L236 110 Q250 200 285 255 Q200 272 115 255 Q150 200 164 110 L154 70 Z" fill="url(#robe-wax-shade)"/>
+<path d="M164 110 Q200 122 236 110" stroke="#d4a23a" stroke-width="5" fill="none"/></svg>

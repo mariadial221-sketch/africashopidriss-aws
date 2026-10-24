@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="boubou-m" width="48" height="48" patternUnits="userSpaceOnUse">
+<rect width="48" height="48" fill="#e9e2d0"/>
+<path d="M24.0 2 L46 24.0 L24.0 46 L2 24.0Z" fill="#d4a23a"/><path d="M24.0 10.56 L37.44 24.0 L24.0 37.44 L10.56 24.0Z" fill="#c9b98f"/>
+<circle cx="24.0" cy="24.0" r="4.800000000000001" fill="#fffaf1"/></pattern>
+<radialGradient id="boubou-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="boubou-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="boubou-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#boubou-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<path d="M150 50 L250 50 L330 120 L300 150 L262 120 L268 262 L132 262 L138 120 L100 150 L70 120 Z" fill="url(#boubou-m)" stroke="#231f1c" stroke-width="2"/>
+<path d="M150 50 L250 50 L330 120 L300 150 L262 120 L268 262 L132 262 L138 120 L100 150 L70 120 Z" fill="url(#boubou-shade)"/>
+<path d="M182 50 Q200 80 218 50" fill="#fffaf1" stroke="#231f1c" stroke-width="2"/>
+<path d="M175 60 Q200 150 225 60 M185 70 Q200 130 215 70" stroke="#d4a23a" stroke-width="3" fill="none"/>
+<path d="M190 150 l10 12 l10 -12 l-10 -12 z" fill="#d4a23a"/></svg>

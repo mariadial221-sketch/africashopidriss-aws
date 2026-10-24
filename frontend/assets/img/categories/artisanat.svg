@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img">
+<defs><pattern id="artisanat-weave" width="24" height="24" patternUnits="userSpaceOnUse">
+<rect width="24" height="24" fill="#c89a5b"/><rect width="12.0" height="12.0" fill="#a8763d"/><rect x="12.0" y="12.0" width="12.0" height="12.0" fill="#a8763d"/>
+<path d="M0 12.0 H24 M12.0 0 V24" stroke="#7a5124" stroke-width="1" opacity=".5"/></pattern>
+<radialGradient id="artisanat-bg" cx=".5" cy=".42" r=".75"><stop offset="0" stop-color="#fffaf1"/><stop offset="1" stop-color="#f3eadb"/></radialGradient>
+<linearGradient id="artisanat-shade" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".18"/><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+<linearGradient id="artisanat-wood" x1="0" x2="1"><stop offset="0" stop-color="#5a3216"/><stop offset=".5" stop-color="#8a5429"/><stop offset="1" stop-color="#4a2810"/></linearGradient>
+</defs>
+<rect width="400" height="300" fill="url(#artisanat-bg)"/>
+<ellipse cx="200.0" cy="258.0" rx="120.0" ry="13.5" fill="#000" opacity=".12"/>
+<g transform="translate(-10 70) scale(.72)"><path d="M200 40 Q262 60 262 150 Q258 238 200 268 Q142 238 138 150 Q138 60 200 40Z" fill="url(#artisanat-wood)" stroke="#231f1c" stroke-width="2"/>
+<path d="M160 120 Q178 108 192 122 Q178 132 160 120Z M208 122 Q222 108 240 120 Q222 132 208 122Z" fill="#231f1c"/>
+<path d="M200 128 L192 190 L208 190 Z" fill="#4a2810"/>
+<path d="M180 214 Q200 226 220 214" stroke="#231f1c" stroke-width="4" fill="none"/>
+<path d="M170 70 Q200 58 230 70 M175 86 Q200 76 225 86" stroke="#d4a23a" stroke-width="3" fill="none"/>
+<circle cx="150" cy="170" r="4" fill="#f7f1e6"/><circle cx="250" cy="170" r="4" fill="#f7f1e6"/></g><g transform="translate(122 70) scale(.72)"><path d="M90 140 Q200 120 310 140 Q300 250 200 262 Q100 250 90 140Z" fill="url(#artisanat-weave)" stroke="#6b4420" stroke-width="3"/>
+<path d="M90 140 Q200 120 310 140 Q300 250 200 262 Q100 250 90 140Z" fill="url(#artisanat-shade)"/>
+<ellipse cx="200" cy="138" rx="110" ry="20" fill="#7a5124" stroke="#6b4420" stroke-width="3"/>
+<path d="M92 160 Q200 182 308 160" stroke="#b5532b" stroke-width="7" fill="none"/>
+<path d="M98 190 Q200 212 302 190" stroke="#1c2347" stroke-width="7" fill="none"/></g></svg>
