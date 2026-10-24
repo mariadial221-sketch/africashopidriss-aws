@@ -1,0 +1,150 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  AfricaShop - Bloc 2 : donnees. Base RDS PostgreSQL chiffree dans les sous-reseaux prives
+  de donnees, et bucket S3 prive pour les photos des vendeurs (CORS limite a PUT).
+  Necessite le bloc 1 (africashop-network).
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: africashop
+    Description: Doit etre identique a celui du bloc 1 (sert a retrouver les exports).
+  DbInstanceClass:
+    Type: String
+    Default: db.t3.micro
+    AllowedValues: [db.t3.micro, db.t3.small, db.t3.medium]
+  EngineVersion:
+    Type: String
+    Default: ""
+    Description: Version PostgreSQL. Vide = version par defaut proposee par RDS.
+  MultiAZ:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: >
+      Cible de production = true. Le sandbox du lab refuse le Multi-AZ : laisser false
+      dans le lab et documenter l'ecart dans le dossier.
+  ManagedPassword:
+    Type: String
+    Default: "true"
+    AllowedValues: ["true", "false"]
+    Description: >
+      true = RDS genere le mot de passe et le stocke dans Secrets Manager (cible).
+      false = repli si Secrets Manager est interdit : mot de passe passe dans DbPassword.
+  DbPassword:
+    Type: String
+    NoEcho: true
+    Default: ""
+    AllowedPattern: "^([A-Za-z0-9]{12,64})?$"
+    Description: >
+      Utilise seulement si ManagedPassword=false. Lettres et chiffres uniquement, 12 caracteres
+      minimum. Ne jamais l'ecrire dans un fichier du depot.
+  CorsAllowedOrigin:
+    Type: String
+    Default: "*"
+    Description: >
+      Origine autorisee a envoyer les photos (PUT). Remplacer "*" par le domaine CloudFront
+      (https://dxxxx.cloudfront.net) une fois le bloc 4 deploye.
+
+Rules:
+  PasswordRequiredWhenNotManaged:
+    RuleCondition: !Equals [!Ref ManagedPassword, "false"]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref DbPassword, ""]]
+        AssertDescription: DbPassword est obligatoire quand ManagedPassword vaut false.
+
+Conditions:
+  UseManagedPassword: !Equals [!Ref ManagedPassword, "true"]
+  HasEngineVersion: !Not [!Equals [!Ref EngineVersion, ""]]
+
+Resources:
+  # ---------------------------------------------------------------- Base de donnees
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Sous-reseaux prives de donnees (2 zones)
+      SubnetIds:
+        - Fn::ImportValue: !Sub "${ProjectName}-DataSubnetA"
+        - Fn::ImportValue: !Sub "${ProjectName}-DataSubnetB"
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-db-subnets" }
+
+  # DeletionPolicy Delete : pratique dans le lab (delete-stack puis redeploiement propres).
+  # En production : Snapshot (ou Retain) + DeletionProtection true.
+  Database:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      DBInstanceIdentifier: !Sub "${ProjectName}-db"
+      Engine: postgres
+      EngineVersion: !If [HasEngineVersion, !Ref EngineVersion, !Ref "AWS::NoValue"]
+      DBInstanceClass: !Ref DbInstanceClass
+      AllocatedStorage: "20"
+      StorageType: gp2
+      StorageEncrypted: true
+      DBName: africashop
+      MasterUsername: africashop
+      ManageMasterUserPassword: !If [UseManagedPassword, true, !Ref "AWS::NoValue"]
+      MasterUserPassword: !If [UseManagedPassword, !Ref "AWS::NoValue", !Ref DbPassword]
+      MultiAZ: !Ref MultiAZ
+      DBSubnetGroupName: !Ref DbSubnetGroup
+      VPCSecurityGroups:
+        - Fn::ImportValue: !Sub "${ProjectName}-DbSgId"
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 7
+      DeleteAutomatedBackups: true
+      DeletionProtection: false
+      MonitoringInterval: 0
+      EnablePerformanceInsights: false
+      AutoMinorVersionUpgrade: true
+      CopyTagsToSnapshot: true
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-db" }
+
+  # ---------------------------------------------------------------- Bucket des photos (prive)
+  # La politique du bucket (acces CloudFront via OAC, refus du HTTP) est creee au bloc 4.
+  MediaBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods: [PUT]
+            AllowedOrigins: [!Ref CorsAllowedOrigin]
+            AllowedHeaders: ["*"]
+            MaxAge: 3000
+      LifecycleConfiguration:
+        Rules:
+          - Id: abort-incomplete-uploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-media" }
+
+Outputs:
+  DbEndpoint:
+    Value: !GetAtt Database.Endpoint.Address
+    Export: { Name: !Sub "${ProjectName}-DbEndpoint" }
+  DbSecretArn:
+    Condition: UseManagedPassword
+    Value: !GetAtt Database.MasterUserSecret.SecretArn
+    Export: { Name: !Sub "${ProjectName}-DbSecretArn" }
+  MediaBucketName:
+    Value: !Ref MediaBucket
+    Export: { Name: !Sub "${ProjectName}-MediaBucketName" }
+  MediaBucketArn:
+    Value: !GetAtt MediaBucket.Arn
+    Export: { Name: !Sub "${ProjectName}-MediaBucketArn" }
