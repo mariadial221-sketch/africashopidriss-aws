@@ -92,7 +92,7 @@ Resources:
       VPCSecurityGroups:
         - Fn::ImportValue: !Sub "${ProjectName}-DbSgId"
       PubliclyAccessible: false
-      BackupRetentionPeriod: 0
+      BackupRetentionPeriod: 1
       DeleteAutomatedBackups: true
       DeletionProtection: false
       MonitoringInterval: 0
