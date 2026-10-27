@@ -1,0 +1,202 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  AfricaShop - Bloc 4 : point d'entree. Bucket prive du site statique, distribution CloudFront
+  avec 3 comportements : /* (site, S3), /media/* (photos, S3), /api/* (ALB, sans cache).
+  Acces aux buckets par Origin Access Control (OAC), HTTPS impose aux visiteurs.
+  Necessite les blocs 1, 2 et 3.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: africashop
+    Description: Doit etre identique a celui des blocs precedents.
+  PriceClass:
+    Type: String
+    Default: PriceClass_100
+    AllowedValues: [PriceClass_100, PriceClass_200, PriceClass_All]
+    Description: PriceClass_100 = Amerique du Nord et Europe (la moins chere).
+
+Resources:
+  # ---------------------------------------------------------------- Bucket du site (prive)
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-site" }
+
+  # ---------------------------------------------------------------- Origin Access Control
+  OriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${ProjectName}-oac-${AWS::StackName}"
+        Description: Acces CloudFront aux buckets S3 prives
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # Les photos sont stockees sous products/... mais exposees sous /media/products/... :
+  # la fonction retire le prefixe /media avant d'interroger S3.
+  MediaRewriteFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub "${ProjectName}-media-rewrite-${AWS::StackName}"
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Retire le prefixe /media de l'URI
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        function handler(event) {
+          var request = event.request;
+          request.uri = request.uri.replace(/^\/media/, '');
+          return request;
+        }
+
+  # ---------------------------------------------------------------- Distribution CloudFront
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub "${ProjectName} - site, photos et API"
+        DefaultRootObject: index.html
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        PriceClass: !Ref PriceClass
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: true
+        Origins:
+          - Id: site-s3
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+          - Id: media-s3
+            DomainName: !Sub
+              - "${MediaBucket}.s3.${AWS::Region}.amazonaws.com"
+              - MediaBucket:
+                  Fn::ImportValue: !Sub "${ProjectName}-MediaBucketName"
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+          - Id: api-alb
+            DomainName:
+              Fn::ImportValue: !Sub "${ProjectName}-AlbDnsName"
+            CustomOriginConfig:
+              HTTPPort: 80
+              OriginProtocolPolicy: http-only
+              OriginReadTimeout: 30
+        DefaultCacheBehavior:
+          TargetOriginId: site-s3
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6   # CachingOptimized
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: api-alb
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad            # CachingDisabled
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac    # AllViewerExceptHostHeader
+          - PathPattern: /media/*
+            TargetOriginId: media-s3
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD]
+            CachedMethods: [GET, HEAD]
+            Compress: true
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6            # CachingOptimized
+            FunctionAssociations:
+              - EventType: viewer-request
+                FunctionARN: !GetAtt MediaRewriteFunction.FunctionMetadata.FunctionARN
+      Tags:
+        - { Key: Name, Value: !Sub "${ProjectName}-cdn" }
+
+  # ---------------------------------------------------------------- Politiques des buckets (OAC + refus du HTTP)
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt SiteBucket.Arn
+              - !Sub "${SiteBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+  MediaBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Fn::ImportValue: !Sub "${ProjectName}-MediaBucketName"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub
+              - "${BucketArn}/*"
+              - BucketArn:
+                  Fn::ImportValue: !Sub "${ProjectName}-MediaBucketArn"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - Fn::ImportValue: !Sub "${ProjectName}-MediaBucketArn"
+              - !Sub
+                - "${BucketArn}/*"
+                - BucketArn:
+                    Fn::ImportValue: !Sub "${ProjectName}-MediaBucketArn"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
+
+Outputs:
+  SiteUrl:
+    Value: !Sub "https://${Distribution.DomainName}"
+    Description: Adresse publique du site (HTTPS)
+  CloudFrontDomain:
+    Value: !GetAtt Distribution.DomainName
+    Export: { Name: !Sub "${ProjectName}-CloudFrontDomain" }
+  DistributionId:
+    Value: !Ref Distribution
+    Export: { Name: !Sub "${ProjectName}-DistributionId" }
+  SiteBucketName:
+    Value: !Ref SiteBucket
+    Export: { Name: !Sub "${ProjectName}-SiteBucketName" }
