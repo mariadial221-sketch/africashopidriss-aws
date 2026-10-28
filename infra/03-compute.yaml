@@ -75,16 +75,28 @@ Resources:
               - Effect: Allow
                 Action: s3:GetObject
                 Resource: !Sub "arn:${AWS::Partition}:s3:::${ArtifactBucket}/releases/*"
+        # Photos : l'application ne fait que signer des envois (PUT) sous products/*.
+        # La lecture est faite par CloudFront (OAC), pas par les instances.
         - PolicyName: media-photos
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: Allow
-                Action: [s3:PutObject, s3:GetObject]
+              - Sid: UploadPhotosProduits
+                Effect: Allow
+                Action: s3:PutObject
                 Resource: !Sub
-                  - "${BucketArn}/*"
+                  - "${BucketArn}/products/*"
                   - BucketArn:
                       Fn::ImportValue: !Sub "${ProjectName}-MediaBucketArn"
+        # Evenements de commande (bonus) : publication limitee au topic des commandes
+        - PolicyName: publish-order-events
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: PublierEvenementsCommande
+                Effect: Allow
+                Action: sns:Publish
+                Resource: !Sub "arn:${AWS::Partition}:sns:${AWS::Region}:${AWS::AccountId}:${ProjectName}-orders"
         - PolicyName: read-db-secret
           PolicyDocument:
             Version: "2012-10-17"
