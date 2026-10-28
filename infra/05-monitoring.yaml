@@ -1,0 +1,228 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  AfricaShop - Bloc 5 : supervision. Topic SNS pour les alertes, 6 alarmes CloudWatch
+  (erreurs, latence, disponibilite, saturation CPU, base de donnees) et un tableau de bord.
+  Necessite les blocs 1 a 4 (exports de l'ALB, du groupe cible, de l'Auto Scaling et de CloudFront).
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: africashop
+    Description: Doit etre identique a celui des blocs precedents.
+  AlertEmail:
+    Type: String
+    Default: ""
+    Description: >
+      Adresse e-mail qui recoit les alertes (une confirmation est envoyee : cliquer sur le lien).
+      Vide = pas d'abonnement.
+
+Conditions:
+  HasEmail: !Not [!Equals [!Ref AlertEmail, ""]]
+
+Resources:
+  # ---------------------------------------------------------------- Notifications
+  AlertsTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "${ProjectName}-alerts"
+  AlertsSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: HasEmail
+    Properties:
+      TopicArn: !Ref AlertsTopic
+      Protocol: email
+      Endpoint: !Ref AlertEmail
+
+  # ---------------------------------------------------------------- Alarmes
+  # 1. Erreurs : le backend renvoie des 5xx
+  Alb5xxAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-alb-5xx"
+      AlarmDescription: Plus de 5 erreurs 5xx par minute pendant 3 minutes (erreurs du backend)
+      Namespace: AWS/ApplicationELB
+      MetricName: HTTPCode_Target_5XX_Count
+      Dimensions:
+        - Name: LoadBalancer
+          Value:
+            Fn::ImportValue: !Sub "${ProjectName}-AlbFullName"
+      Statistic: Sum
+      Period: 60
+      EvaluationPeriods: 3
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+
+  # 2. Latence : temps de reponse du 95e percentile
+  LatencyAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-latency-p95"
+      AlarmDescription: Temps de reponse p95 superieur a 1,5 s pendant 3 minutes
+      Namespace: AWS/ApplicationELB
+      MetricName: TargetResponseTime
+      Dimensions:
+        - Name: LoadBalancer
+          Value:
+            Fn::ImportValue: !Sub "${ProjectName}-AlbFullName"
+      ExtendedStatistic: p95
+      Period: 60
+      EvaluationPeriods: 3
+      Threshold: 1.5
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+
+  # 3. Disponibilite : au moins une instance jugee en mauvaise sante par l'ALB
+  UnhealthyHostsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-unhealthy-hosts"
+      AlarmDescription: Au moins une instance en mauvaise sante pendant 2 minutes
+      Namespace: AWS/ApplicationELB
+      MetricName: UnHealthyHostCount
+      Dimensions:
+        - Name: LoadBalancer
+          Value:
+            Fn::ImportValue: !Sub "${ProjectName}-AlbFullName"
+        - Name: TargetGroup
+          Value:
+            Fn::ImportValue: !Sub "${ProjectName}-TargetGroupFullName"
+      Statistic: Maximum
+      Period: 60
+      EvaluationPeriods: 2
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+
+  # 4. Saturation : CPU moyen des instances
+  AsgCpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-asg-cpu-high"
+      AlarmDescription: CPU moyen des instances superieur a 80 % pendant 10 minutes
+      Namespace: AWS/EC2
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: AutoScalingGroupName
+          Value:
+            Fn::ImportValue: !Sub "${ProjectName}-AsgName"
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+
+  # 5. Base de donnees : CPU
+  RdsCpuAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-rds-cpu-high"
+      AlarmDescription: CPU de la base superieur a 80 % pendant 10 minutes
+      Namespace: AWS/RDS
+      MetricName: CPUUtilization
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Sub "${ProjectName}-db"
+      Statistic: Average
+      Period: 300
+      EvaluationPeriods: 2
+      Threshold: 80
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+
+  # 6. Base de donnees : espace disque restant (moins de 2 Go sur 20 Go)
+  RdsStorageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: !Sub "${ProjectName}-rds-storage-low"
+      AlarmDescription: Moins de 2 Go d'espace libre sur la base
+      Namespace: AWS/RDS
+      MetricName: FreeStorageSpace
+      Dimensions:
+        - Name: DBInstanceIdentifier
+          Value: !Sub "${ProjectName}-db"
+      Statistic: Minimum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 2147483648
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertsTopic]
+      OKActions: [!Ref AlertsTopic]
+
+  # ---------------------------------------------------------------- Tableau de bord
+  Dashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardName: !Sub "${ProjectName}-dashboard"
+      DashboardBody: !Sub
+        - |
+          {
+            "widgets": [
+              { "type": "metric", "x": 0, "y": 0, "width": 12, "height": 6,
+                "properties": { "title": "Trafic et erreurs (ALB)", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Sum", "period": 60,
+                  "metrics": [
+                    ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", "${AlbFullName}"],
+                    ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", "${AlbFullName}"],
+                    ["AWS/ApplicationELB", "HTTPCode_Target_4XX_Count", "LoadBalancer", "${AlbFullName}"] ] } },
+              { "type": "metric", "x": 12, "y": 0, "width": 12, "height": 6,
+                "properties": { "title": "Latence p95 (secondes)", "region": "${AWS::Region}", "view": "timeSeries", "stat": "p95", "period": 60,
+                  "metrics": [
+                    ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "${AlbFullName}"] ] } },
+              { "type": "metric", "x": 0, "y": 6, "width": 12, "height": 6,
+                "properties": { "title": "Instances saines / non saines", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Maximum", "period": 60,
+                  "metrics": [
+                    ["AWS/ApplicationELB", "HealthyHostCount", "LoadBalancer", "${AlbFullName}", "TargetGroup", "${TgFullName}"],
+                    ["AWS/ApplicationELB", "UnHealthyHostCount", "LoadBalancer", "${AlbFullName}", "TargetGroup", "${TgFullName}"] ] } },
+              { "type": "metric", "x": 12, "y": 6, "width": 12, "height": 6,
+                "properties": { "title": "CPU des instances et nombre d'instances", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Average", "period": 60,
+                  "metrics": [
+                    ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "${AsgName}"],
+                    ["AWS/AutoScaling", "GroupInServiceInstances", "AutoScalingGroupName", "${AsgName}", { "stat": "Maximum", "yAxis": "right" }] ] } },
+              { "type": "metric", "x": 0, "y": 12, "width": 12, "height": 6,
+                "properties": { "title": "Base de donnees : CPU et connexions", "region": "${AWS::Region}", "view": "timeSeries", "stat": "Average", "period": 60,
+                  "metrics": [
+                    ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "${DbId}"],
+                    ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "${DbId}", { "yAxis": "right" }] ] } },
+              { "type": "metric", "x": 12, "y": 12, "width": 12, "height": 6,
+                "properties": { "title": "CloudFront : requetes et taux d'erreurs 5xx", "region": "us-east-1", "view": "timeSeries", "period": 60,
+                  "metrics": [
+                    ["AWS/CloudFront", "Requests", "DistributionId", "${DistId}", "Region", "Global", { "stat": "Sum" }],
+                    ["AWS/CloudFront", "5xxErrorRate", "DistributionId", "${DistId}", "Region", "Global", { "stat": "Average", "yAxis": "right" }] ] } },
+              { "type": "alarm", "x": 0, "y": 18, "width": 24, "height": 4,
+                "properties": { "title": "Etat des alarmes",
+                  "alarms": [
+                    "arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ProjectName}-alb-5xx",
+                    "arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ProjectName}-latency-p95",
+                    "arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ProjectName}-unhealthy-hosts",
+                    "arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ProjectName}-asg-cpu-high",
+                    "arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ProjectName}-rds-cpu-high",
+                    "arn:${AWS::Partition}:cloudwatch:${AWS::Region}:${AWS::AccountId}:alarm:${ProjectName}-rds-storage-low" ] } }
+            ]
+          }
+        - AlbFullName:
+            Fn::ImportValue: !Sub "${ProjectName}-AlbFullName"
+          TgFullName:
+            Fn::ImportValue: !Sub "${ProjectName}-TargetGroupFullName"
+          AsgName:
+            Fn::ImportValue: !Sub "${ProjectName}-AsgName"
+          DistId:
+            Fn::ImportValue: !Sub "${ProjectName}-DistributionId"
+          DbId: !Sub "${ProjectName}-db"
+
+Outputs:
+  AlertsTopicArn:
+    Value: !Ref AlertsTopic
+  DashboardName:
+    Value: !Ref Dashboard
