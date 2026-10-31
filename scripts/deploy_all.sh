@@ -39,12 +39,16 @@ aws cloudformation deploy --stack-name africashop-edge --template-file infra/04-
   --tags "${TAGS[@]}" --parameter-overrides EnableWaf=true RateLimit="$RATE" --no-fail-on-empty-changeset
 SITE=$(output africashop-edge SiteBucketName)
 aws s3 sync frontend "s3://${SITE}" --delete --cache-control no-cache --only-show-errors
+URL=$(output africashop-edge SiteUrl)
+
+log "4b/5 Autorisation CORS des envois de photos pour ${URL}"
+aws cloudformation deploy --stack-name africashop-data --template-file infra/02-data.yaml \
+  --tags "${TAGS[@]}" --parameter-overrides ManagedPassword=true MultiAZ=true CorsAllowedOrigin="$URL" --no-fail-on-empty-changeset
 
 log "5/5 Supervision (SNS, alarmes, tableau de bord)"
 aws cloudformation deploy --stack-name africashop-monitoring --template-file infra/05-monitoring.yaml \
   --tags "${TAGS[@]}" --parameter-overrides AlertEmail="$EMAIL" --no-fail-on-empty-changeset
 
-URL=$(output africashop-edge SiteUrl)
 log "Attente du premier 200 sur ${URL}/api/info (installation des instances : 5 à 8 min)"
 READY=0
 for _ in $(seq 1 60); do
