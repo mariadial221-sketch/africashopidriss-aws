@@ -2,17 +2,21 @@
 
     pip install locust
     locust -f loadtest/locustfile.py --host https://<votre-url> --headless -u 300 -r 20 -t 10m --csv resultats
+    WAIT_MIN=0.5 WAIT_MAX=1.5 locust -f loadtest/locustfile.py --host https://<votre-url> --headless -u 400 -r 20 -t 8m --csv saturation
 
 Profil : majorité de navigation catalogue (cacheable), un peu de fiches produit, rares commandes.
 Observez pendant le test : CPU de l'ASG, nombre d'instances, latence p95 de l'ALB, connexions RDS.
 """
+import os
 import random
 
 from locust import HttpUser, between, task
 
 
 class Visiteur(HttpUser):
-    wait_time = between(5, 20)   # temps de réflexion : c'est le « W » de la loi de Little
+    # Temps de réflexion (le « W » de la loi de Little). Réglable sans modifier le fichier :
+    #   WAIT_MIN=0.5 WAIT_MAX=1.5 locust ...   (test de saturation)   -   par défaut 5 à 20 s (visiteur réaliste)
+    wait_time = between(float(os.getenv("WAIT_MIN", "5")), float(os.getenv("WAIT_MAX", "20")))
 
     def on_start(self):
         r = self.client.get("/api/products?size=48", name="/api/products")
