@@ -40,8 +40,11 @@ Parameters:
     Description: Cible de CPU moyen pour la mise a l'echelle.
   RequestsPerTarget:
     Type: Number
-    Default: 300
-    Description: Requetes par instance et par minute avant d'ajouter une instance.
+    Default: 10000
+    Description: >
+      Requetes par instance et par minute avant d'ajouter une instance. Valeur mesuree au test de charge :
+      une instance t3.micro traite environ 190 req/s (11 400 par minute) a 40 % de CPU ; l'ancienne
+      valeur de 300 declenchait la montee au maximum des 5 req/s par instance.
   TestCidr:
     Type: String
     Default: ""
